@@ -80,12 +80,14 @@ class LessonResource extends Resource
                     ->image()
                     ->directory('lesson-images')
                     ->visibility('public')
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->nullable(),
                 Forms\Components\FileUpload::make('audio')
                     ->acceptedFileTypes(['audio/mpeg', 'audio/mp3', 'audio/wav'])
                     ->directory('lesson-audio')
                     ->visibility('public')
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->nullable(),
                 Forms\Components\TextInput::make('order')
                     ->numeric()
                     ->default(0)

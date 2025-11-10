@@ -64,6 +64,11 @@ class QuizzesRelationManager extends RelationManager
                 Tables\Actions\CreateAction::make(),
             ])
             ->actions([
+                Tables\Actions\Action::make('manage_questions')
+                    ->label('Manage Questions')
+                    ->icon('heroicon-o-clipboard-document-check')
+                    ->url(fn ($record) => \App\Filament\Resources\LessonQuizResource::getUrl('edit', ['record' => $record]))
+                    ->color('info'),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])
