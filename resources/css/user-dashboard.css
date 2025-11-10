@@ -1,0 +1,15 @@
+/* User Dashboard Specific Styles */
+.user-sidebar {
+    transition: transform 0.3s ease-in-out;
+}
+
+.user-sidebar.closed {
+    transform: translateX(-100%);
+}
+
+@media (min-width: 1024px) {
+    .user-sidebar.closed {
+        transform: translateX(0);
+    }
+}
+
