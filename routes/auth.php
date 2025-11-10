@@ -16,6 +16,10 @@ Route::middleware('guest')->group(function () {
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
+            $user = Auth::user();
+            if (!$user->has_completed_onboarding) {
+                return redirect()->route('choose-starting-point');
+            }
             return redirect()->intended(route('user.dashboard'));
         }
 
@@ -39,11 +43,13 @@ Route::middleware('guest')->group(function () {
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
+            'has_completed_onboarding' => false, // Ensure new users see the onboarding page
+            'starting_level' => null, // Will be set when they choose a path
         ]);
 
         Auth::login($user);
 
-        return redirect()->route('user.dashboard');
+        return redirect()->route('choose-starting-point');
     });
 
     Route::get('forgot-password', function () {

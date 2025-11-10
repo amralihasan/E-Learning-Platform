@@ -21,6 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'starting_level',
+        'has_completed_onboarding',
     ];
 
     /**
@@ -43,6 +45,12 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'has_completed_onboarding' => 'boolean',
         ];
+    }
+
+    public function assessments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(UserAssessment::class);
     }
 }

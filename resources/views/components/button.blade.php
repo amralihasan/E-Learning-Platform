@@ -18,7 +18,7 @@ $classes = $baseClasses . ' ' . $variantClasses[$variant] . ' ' . $sizeClasses[$
 $tag = $attributes->has('href') ? 'a' : 'button';
 @endphp
 
-<{{ $tag }} {{ $tag === 'button' ? 'type="' . $type . '"' : '' }} {{ $attributes->merge(['class' => $classes]) }}>
+<{{ $tag }} {{ $tag === 'button' ? 'type="' . $type . '"' : '' }} {{ $attributes->merge(['class' => $classes])->except(['variant', 'size', 'type']) }}>
     {{ $slot }}
 </{{ $tag }}>
 

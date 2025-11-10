@@ -14,11 +14,21 @@ Route::get('/courses', CoursesPage::class)->name('courses');
 Route::get('/courses/{id}', CourseDetailsPage::class)->name('course.details');
 Route::get('/contact', ContactPage::class)->name('contact');
 
+// Assessment Preview (for admin)
+Route::get('/assessment/preview/{id}', \App\Livewire\AssessmentPreviewPage::class)->name('assessment.preview');
+
 // Authentication Routes
 require __DIR__.'/auth.php';
 
-// User Dashboard Routes (Protected)
-Route::middleware(['auth'])->prefix('user')->name('user.')->group(function () {
+// Onboarding Routes (Protected, but before onboarding check)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/choose-starting-point', \App\Livewire\ChooseStartingPoint::class)->name('choose-starting-point');
+    Route::get('/assessment/{id}', \App\Livewire\AssessmentPage::class)->name('assessment.start');
+    Route::get('/assessment/results/{id}', \App\Livewire\AssessmentResultsPage::class)->name('assessment.results');
+});
+
+// User Dashboard Routes (Protected - requires onboarding)
+Route::middleware(['auth', \App\Http\Middleware\EnsureOnboardingCompleted::class])->prefix('user')->name('user.')->group(function () {
     Route::get('/dashboard', function () {
         return view('user.dashboard');
     })->name('dashboard');
