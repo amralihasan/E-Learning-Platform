@@ -21,9 +21,9 @@
                     </div>
                     <select wire:model.live="level" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
                         <option value="">All Levels</option>
-                        <option value="beginner">Beginner</option>
-                        <option value="intermediate">Intermediate</option>
-                        <option value="advanced">Advanced</option>
+                        @foreach(['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as $lvl)
+                        <option value="{{ $lvl }}" {{ in_array($lvl, $unlockedLevels) ? '' : 'disabled' }}>{{ $lvl }}{{ !in_array($lvl, $unlockedLevels) ? ' (Locked)' : '' }}</option>
+                        @endforeach
                     </select>
                     <select wire:model.live="category" class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500">
                         <option value="">All Categories</option>
@@ -53,40 +53,56 @@
         <!-- Courses Grid -->
         <section class="py-12 bg-gray-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                @if(count($courses) > 0)
                 @if($view === 'grid')
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    @for($i = 0; $i < 9; $i++)
+                    @foreach($courses as $course)
                     <x-course-card 
                         :course="(object)[
-                            'title' => 'English Grammar Fundamentals',
-                            'description' => 'Master the basics of English grammar with interactive lessons and exercises.',
-                            'lessons_count' => 25,
-                            'duration' => '6 weeks',
-                            'level' => 'Beginner'
+                            'id' => $course->id,
+                            'title' => $course->title,
+                            'description' => $course->description,
+                            'lessons_count' => $course->lessons->count(),
+                            'duration' => $course->duration_weeks . ' weeks',
+                            'level' => $course->level
                         ]"
                     />
-                    @endfor
+                    @endforeach
                 </div>
                 @else
                 <div class="space-y-4">
-                    @for($i = 0; $i < 9; $i++)
+                    @foreach($courses as $course)
                     <x-card class="flex flex-col md:flex-row gap-6">
-                        <div class="w-full md:w-64 h-48 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg"></div>
+                        <div class="w-full md:w-64 h-48 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg">
+                            @if($course->image)
+                            <img src="{{ asset('storage/' . $course->image) }}" alt="{{ $course->title }}" class="w-full h-full object-cover rounded-lg">
+                            @endif
+                        </div>
                         <div class="flex-1">
                             <div class="flex items-start justify-between mb-2">
-                                <h3 class="text-xl font-semibold">English Grammar Fundamentals</h3>
-                                <x-badge variant="primary">Beginner</x-badge>
+                                <h3 class="text-xl font-semibold">{{ $course->title }}</h3>
+                                <x-badge variant="primary">{{ $course->level }}</x-badge>
                             </div>
-                            <p class="text-gray-600 mb-4">Master the basics of English grammar with interactive lessons and exercises.</p>
+                            <p class="text-gray-600 mb-4">{{ $course->description }}</p>
                             <div class="flex items-center gap-6 text-sm text-gray-500 mb-4">
-                                <span>25 Lessons</span>
-                                <span>6 Weeks</span>
-                                <span>4.5 ⭐</span>
+                                <span>{{ $course->lessons->count() }} Lessons</span>
+                                <span>{{ $course->duration_weeks }} Weeks</span>
                             </div>
-                            <x-button variant="primary">View Course</x-button>
+                            <x-button variant="primary" href="{{ route('course.details', $course->id) }}">View Course</x-button>
                         </div>
                     </x-card>
-                    @endfor
+                    @endforeach
+                </div>
+                @endif
+                @else
+                <div class="text-center py-12">
+                    <p class="text-gray-500 text-lg mb-4">No courses available for your unlocked levels.</p>
+                    @if(auth()->check() && count($unlockedLevels) === 0)
+                    <p class="text-gray-400">Complete the assessment to unlock levels and access courses.</p>
+                    <a href="{{ route('choose-starting-point') }}" class="inline-block mt-4 px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+                        Take Assessment
+                    </a>
+                    @endif
                 </div>
                 @endif
 

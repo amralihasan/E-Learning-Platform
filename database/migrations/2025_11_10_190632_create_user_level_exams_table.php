@@ -11,15 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_assessments', function (Blueprint $table) {
+        Schema::create('user_level_exams', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('assessment_id')->constrained()->onDelete('cascade');
-            $table->timestamp('started_at');
-            $table->timestamp('completed_at')->nullable();
+            $table->foreignId('level_exam_id')->constrained()->onDelete('cascade');
+            $table->string('level', 2); // A1, A2, B1, B2, C1, C2
             $table->integer('score')->default(0);
             $table->integer('max_score')->default(0);
-            $table->string('recommended_level')->nullable(); // A1, A2, B1, B2, C1, C2
+            $table->decimal('percentage', 5, 2)->default(0);
+            $table->boolean('passed')->default(false);
+            $table->timestamp('started_at');
+            $table->timestamp('completed_at')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_assessments');
+        Schema::dropIfExists('user_level_exams');
     }
 };

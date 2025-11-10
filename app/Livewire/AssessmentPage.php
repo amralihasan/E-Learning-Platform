@@ -8,6 +8,7 @@ use App\Models\Assessment;
 use App\Models\AssessmentQuestion;
 use App\Models\UserAssessment;
 use App\Models\UserAssessmentAnswer;
+use App\Services\LevelUnlockService;
 use Illuminate\Support\Facades\Auth;
 
 #[Layout('components.layouts.app')]
@@ -142,7 +143,7 @@ class AssessmentPage extends Component
             }
         }
 
-        // Calculate recommended level
+        // Calculate percentage
         $percentage = $maxScore > 0 ? ($totalScore / $maxScore) * 100 : 0;
         $recommendedLevel = $this->calculateLevel($percentage);
 
@@ -154,8 +155,12 @@ class AssessmentPage extends Component
             'recommended_level' => $recommendedLevel,
         ]);
 
-        // Update user
+        // Unlock levels based on score using LevelUnlockService
         $user = Auth::user();
+        $levelUnlockService = new LevelUnlockService();
+        $unlockedLevels = $levelUnlockService->unlockLevelsBasedOnScore($user, $percentage, $this->userAssessment->id);
+
+        // Update user
         $user->starting_level = $recommendedLevel;
         $user->has_completed_onboarding = true;
         $user->save();

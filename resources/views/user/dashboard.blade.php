@@ -2,6 +2,55 @@
     <div>
         <h1 class="text-3xl font-bold text-gray-900 mb-8">Welcome back, {{ auth()->user()->name ?? 'Student' }}!</h1>
 
+        <!-- Level Information -->
+        @php
+            $user = auth()->user();
+            $unlockedLevels = $user->getUnlockedLevelsArray();
+            $currentLevel = $user->current_level ?? $user->starting_level;
+            $allLevels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+            $nextLevel = null;
+            if ($currentLevel) {
+                $currentIndex = array_search($currentLevel, $allLevels);
+                if ($currentIndex !== false && $currentIndex < count($allLevels) - 1) {
+                    $nextLevel = $allLevels[$currentIndex + 1];
+                }
+            }
+        @endphp
+        <x-card class="mb-8">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold text-gray-900">Your English Level</h2>
+                @if($currentLevel)
+                <div class="text-4xl font-bold text-primary-600">{{ $currentLevel }}</div>
+                @endif
+            </div>
+            <div class="mb-4">
+                <p class="text-gray-600 mb-3">Unlocked Levels:</p>
+                <div class="flex flex-wrap gap-2">
+                    @foreach($allLevels as $level)
+                    <div class="px-3 py-1 rounded-lg font-semibold text-sm {{ in_array($level, $unlockedLevels) ? 'bg-green-100 text-green-800 border-2 border-green-500' : 'bg-gray-100 text-gray-400 border-2 border-gray-300' }}">
+                        {{ $level }}
+                        @if(in_array($level, $unlockedLevels))
+                        <svg class="inline-block w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        @endif
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @if($nextLevel && !in_array($nextLevel, $unlockedLevels))
+            <div class="pt-4 border-t border-gray-200">
+                <p class="text-sm text-gray-600 mb-2">To unlock <strong>Level {{ $nextLevel }}</strong>, take the level exam:</p>
+                <a href="{{ route('level-exam.start', $nextLevel) }}" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                    </svg>
+                    Take Level {{ $nextLevel }} Exam
+                </a>
+            </div>
+            @endif
+        </x-card>
+
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <x-card>

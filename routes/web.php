@@ -25,6 +25,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/choose-starting-point', \App\Livewire\ChooseStartingPoint::class)->name('choose-starting-point');
     Route::get('/assessment/{id}', \App\Livewire\AssessmentPage::class)->name('assessment.start');
     Route::get('/assessment/results/{id}', \App\Livewire\AssessmentResultsPage::class)->name('assessment.results');
+    Route::get('/level-exam/{level}', \App\Livewire\LevelExamPage::class)->name('level-exam.start');
+    Route::get('/level-exam/results/{id}', function ($id) {
+        $userExam = \App\Models\UserLevelExam::with(['levelExam'])->where('user_id', auth()->id())->findOrFail($id);
+        return view('level-exam-results', ['userExam' => $userExam]);
+    })->name('level-exam.results');
 });
 
 // User Dashboard Routes (Protected - requires onboarding)

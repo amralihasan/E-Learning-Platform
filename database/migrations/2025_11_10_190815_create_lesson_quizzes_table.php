@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('assessment_answers', function (Blueprint $table) {
+        Schema::create('lesson_quizzes', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('question_id')->constrained('assessment_questions')->onDelete('cascade');
-            $table->text('answer_text');
-            $table->boolean('is_correct')->default(false);
-            $table->integer('order')->default(0);
+            $table->foreignId('lesson_id')->constrained()->onDelete('cascade');
+            $table->string('title');
+            $table->text('description')->nullable();
+            $table->decimal('passing_percentage', 5, 2)->default(70.00);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('assessment_answers');
+        Schema::dropIfExists('lesson_quizzes');
     }
 };
